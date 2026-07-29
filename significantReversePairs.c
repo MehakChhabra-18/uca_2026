@@ -1,75 +1,89 @@
 #include <stdio.h>
 
-#define MAX 100000
-
-long long merge(int arr[], int temp[], int low, int mid, int high)
+int merge(int arr[], int left, int mid, int right)
 {
-    long long count = 0;
-    int i, j, k;
+    int count = 0;
+    int i = left;
+    int j = mid + 1;
 
-    // Count significant reverse pairs
-    j = mid + 1;
-    for (i = low; i <= mid; i++)
+    while (i <= mid)
     {
-        while (j <= high && (long long)arr[i] > 2LL * arr[j])
+        while (j <= right && arr[i] > 2 * arr[j])
+        {
             j++;
+        }
 
-        count += (j - (mid + 1));
+        count += j - (mid + 1);
+        i++;
     }
 
-    // Merge two sorted halves
-    i = low;
-    j = mid + 1;
-    k = low;
+    
+    int *temp = (int *)malloc((right - left + 1) * sizeof(int));
 
-    while (i <= mid && j <= high)
+    i = left;
+    j = mid + 1;
+    int k = 0;
+
+    while (i <= mid && j <= right)
     {
         if (arr[i] <= arr[j])
+        {
             temp[k++] = arr[i++];
+        }
         else
+        {
             temp[k++] = arr[j++];
+        }
     }
 
     while (i <= mid)
+    {
         temp[k++] = arr[i++];
+    }
 
-    while (j <= high)
+    while (j <= right)
+    {
         temp[k++] = arr[j++];
+    }
 
-    for (i = low; i <= high; i++)
-        arr[i] = temp[i];
+    for (i = 0; i < k; i++)
+    {
+        arr[left + i] = temp[i];
+    }
+
+    free(temp);
+    return count;
+}
+
+int mergeSort(int arr[], int left, int right)
+{
+    if (left >= right)
+    {
+        return 0;
+    }
+
+    int mid = (left + right) / 2;
+
+    int count = 0;
+
+    count += mergeSort(arr, left, mid);
+    count += mergeSort(arr, mid + 1, right);
+    count += merge(arr, left, mid, right);
 
     return count;
 }
 
-long long mergeSort(int arr[], int temp[], int low, int high)
+int reversePairs(int arr[], int n)
 {
-    if (low >= high)
-        return 0;
-
-    int mid = (low + high) / 2;
-
-    long long count = 0;
-
-    count += mergeSort(arr, temp, low, mid);
-    count += mergeSort(arr, temp, mid + 1, high);
-    count += merge(arr, temp, low, mid, high);
-
-    return count;
+    return mergeSort(arr, 0, n - 1);
 }
 
 int main()
 {
-    int n;
-    scanf("%d", &n);
+    int arr[] = {2, 3, 8, 6, 1};
+    int n = sizeof(arr) / sizeof(arr[0]);
 
-    int arr[MAX];
-    int temp[MAX];
-
-    for (int i = 0; i < n; i++)
-        scanf("%d", &arr[i]);
-
-    printf("%lld\n", mergeSort(arr, temp, 0, n - 1));
+    printf("Reverse Pair Count = %d\n", reversePairs(arr, n));
 
     return 0;
 }
