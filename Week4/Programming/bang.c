@@ -3,7 +3,7 @@
 // without using !
 int bang(int x)
 {
-    return ((x | -x) >> 31) + 1;
+    return ((x | ~x+1) >> 31) + 1;
 }
 
 int main()
