@@ -9,35 +9,38 @@ class intersectionOfTwoLinkedLists {
             next = null;
         }
     }
+     
     public Node getIntersection(Node headA, Node headB) {
-        HashSet<Integer> set=new HashSet<>();
-        while(headA!=null)
-        {
-            set.add(headA.data);
-            headA=headA.next;
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        while (headA != null) {
+            map.put(headA.data, map.getOrDefault(headA.data, 0) + 1);
+            headA = headA.next;
         }
 
-        HashSet<Integer> set1=new HashSet<>();
-        while(headB!=null)
-        {
-            set1.add(headB.data);
-            headB=headB.next;
+        HashMap<Integer, Integer> map1 = new HashMap<>();
+
+        while (headB != null) {
+            map1.put(headB.data, map1.getOrDefault(headB.data, 0) + 1);
+            headB = headB.next;
         }
 
-        Node dummy=new Node(0);
-        Node temp=dummy;
-        for(int i:set)
-        {
-            if(set1.contains(i))
-            {
-                temp.next=new Node(i);
-                temp=temp.next;
+        Node dummy = new Node(0);
+        Node temp = dummy;
+
+        for (int i : map.keySet()) {
+
+            if (map1.containsKey(i)) {
+                int count = Math.min(map.get(i), map1.get(i));
+                while (count > 0) {
+                    temp.next = new Node(i);
+                    temp = temp.next;
+                    count--;
+                }
             }
         }
 
         return dummy.next;
-
-
     }
 
     public static void print(Node head)
